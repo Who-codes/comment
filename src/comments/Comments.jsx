@@ -43,6 +43,7 @@ const Comments = ({ currentUserId }) => {
             key={rootComment.id}
             comment={rootComment}
             replies={getReplies(rootComment.id)}
+            currentUserId={currentUserId}
           />
         ))}
       </div>

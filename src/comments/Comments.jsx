@@ -3,6 +3,7 @@ import {
   getComments as getCommentsApi,
   createComment as createCommentApi,
   deleteComment as deleteCommentApi,
+  updateComment as updateCommentApi,
 } from "../api";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
@@ -42,6 +43,20 @@ const Comments = ({ currentUserId }) => {
     }
   };
 
+  const updateComment = (text, commentId) => {
+    updateCommentApi(text, commentId).then(() => {
+      const updatedBackEndComment = backendComments.map((backendComment) => {
+        if (backendComment.id === commentId) {
+          return { ...backendComment, body: text };
+        }
+        return backendComment;
+      });
+
+      setBackEndComments(updatedBackEndComment);
+      setActiveComment(null);
+    });
+  };
+
   useEffect(() => {
     getCommentsApi().then((data) => setBackEndComments(data));
   }, []);
@@ -62,6 +77,7 @@ const Comments = ({ currentUserId }) => {
             activeComment={activeComment}
             setActiveComment={setActiveComment}
             addComment={addComment}
+            updateComment={updateComment}
           />
         ))}
       </div>

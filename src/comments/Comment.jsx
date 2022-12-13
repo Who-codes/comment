@@ -10,6 +10,7 @@ const Comment = ({
   setActiveComment,
   parentId = null,
   addComment,
+  updateComment,
 }) => {
   const fiveMins = 300000;
   const timePassed = new Date() - new Date(comment.createdAt) > fiveMins;
@@ -43,7 +44,17 @@ const Comment = ({
           <div className="comment-author">{comment.username}</div>
           <div>{createdAt}</div>
         </div>
-        <div className="comment-text">{comment.body}</div>
+        {!isEditing ? (
+          <div className="comment-text">{comment.body}</div>
+        ) : (
+          <CommentForm
+            submitLable={"Update"}
+            hasCancleBtn
+            intialText={comment.body}
+            handleSubmit={(text) => updateComment(text, comment.id)}
+            handleCancle={() => activeComment(null)}
+          />
+        )}
         <div className="comment-actions">
           {canReply && (
             <div
@@ -93,6 +104,7 @@ const Comment = ({
                 addComment={addComment}
                 activeComment={activeComment}
                 setActiveComment={setActiveComment}
+                updateComment={updateComment}
               />
             ))}
           </div>

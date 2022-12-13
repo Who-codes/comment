@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import {
   getComments as getCommentsApi,
   createComment as createCommentApi,
+  deleteComment as deleteCommentApi,
 } from "../api";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
 
 const Comments = ({ currentUserId }) => {
   const [backendComments, setBackEndComments] = useState([]);
+  const [activeComment, setActiveComment] = useState(null);
   const rootComments = backendComments.filter(
     (backendFilter) => backendFilter.parentId === null
   );
@@ -28,6 +30,17 @@ const Comments = ({ currentUserId }) => {
     });
   };
 
+  const deleteComment = (commentId) => {
+    if (window.confirm("Are you sure?")) {
+      deleteCommentApi(commentId).then(() => {
+        const updatedBackEndComment = backendComments.filter(
+          (backendComment) => backendComment.id !== commentId
+        );
+        setBackEndComments(updatedBackEndComment);
+      });
+    }
+  };
+
   useEffect(() => {
     getCommentsApi().then((data) => setBackEndComments(data));
   }, []);
@@ -44,6 +57,7 @@ const Comments = ({ currentUserId }) => {
             comment={rootComment}
             replies={getReplies(rootComment.id)}
             currentUserId={currentUserId}
+            deleteComment={deleteComment}
           />
         ))}
       </div>

@@ -27,6 +27,7 @@ const Comments = ({ currentUserId }) => {
     console.log(text, parentId);
     createCommentApi(text, parentId).then((comment) => {
       setBackEndComments([comment, ...backendComments]);
+      setActiveComment(null);
     });
   };
 
@@ -58,6 +59,9 @@ const Comments = ({ currentUserId }) => {
             replies={getReplies(rootComment.id)}
             currentUserId={currentUserId}
             deleteComment={deleteComment}
+            activeComment={activeComment}
+            setActiveComment={setActiveComment}
+            addComment={addComment}
           />
         ))}
       </div>

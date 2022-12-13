@@ -1,12 +1,34 @@
 import React from "react";
+import CommentForm from "./CommentForm";
 
-const Comment = ({ comment, replies, currentUserId, deleteComment }) => {
+const Comment = ({
+  comment,
+  replies,
+  currentUserId,
+  deleteComment,
+  activeComment,
+  setActiveComment,
+  parentId = null,
+  addComment,
+}) => {
   const fiveMins = 300000;
   const timePassed = new Date() - new Date(comment.createdAt) > fiveMins;
   const canReply = Boolean(currentUserId);
   const canEdit = currentUserId === comment.userId && !timePassed;
   const canDelete = currentUserId === comment.userId;
   const createdAt = new Date(comment.createdAt).toLocaleDateString();
+  const isReplaying =
+    activeComment &&
+    activeComment.type === "replying" &&
+    activeComment.id === comment.id;
+
+  const isEditing =
+    activeComment &&
+    activeComment.type === "editing" &&
+    activeComment.id === comment.id;
+
+  const replyId = parentId ? parentId : comment.id;
+
   return (
     <div className="comment">
       <div className="comment-image-container">
@@ -23,8 +45,26 @@ const Comment = ({ comment, replies, currentUserId, deleteComment }) => {
         </div>
         <div className="comment-text">{comment.body}</div>
         <div className="comment-actions">
-          {canReply && <div className="comment-action">Reply</div>}
-          {canEdit && <div className="comment-action">Edit</div>}
+          {canReply && (
+            <div
+              className="comment-action"
+              onClick={() =>
+                setActiveComment({ type: "replying", id: comment.id })
+              }
+            >
+              Reply
+            </div>
+          )}
+          {canEdit && (
+            <div
+              className="comment-action"
+              onClick={() =>
+                setActiveComment({ type: "edting", id: comment.id })
+              }
+            >
+              Edit
+            </div>
+          )}
           {canDelete && (
             <div
               className="comment-action"
@@ -34,6 +74,12 @@ const Comment = ({ comment, replies, currentUserId, deleteComment }) => {
             </div>
           )}
         </div>
+        {isReplaying && (
+          <CommentForm
+            submitLable={"Reply"}
+            handleSubmit={(text) => addComment(text, replyId)}
+          />
+        )}
         {replies.length > 0 && (
           <div className="replies">
             {replies.map((reply) => (
@@ -43,6 +89,10 @@ const Comment = ({ comment, replies, currentUserId, deleteComment }) => {
                 replies={[]}
                 currentUserId={currentUserId}
                 deleteComment={deleteComment}
+                parentId={comment.id}
+                addComment={addComment}
+                activeComment={activeComment}
+                setActiveComment={setActiveComment}
               />
             ))}
           </div>
